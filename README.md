@@ -5,7 +5,7 @@
 
 ### As I said before, I have experience working with convolutional neural network, but because I changed my computer last year, the previous code is not in the current PC.
 
-## *my programming experience:
+## My programming experience:
 Undergraduate stage：C, PLC (Application field：engineering) <br>
-Master stage: R/ Python/ Matlab (Application field：mathematics, prediction and classification using ML models) 
+Master stage: R/ Python/ Matlab (Application field：mathematics, prediction and classification using ML models)  <br>
 PhD stage： Python(main), TA of R lectures in economic faculty. (Application field：Optimization, Graph theory, data competition) 
