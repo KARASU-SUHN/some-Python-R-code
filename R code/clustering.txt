@@ -1,0 +1,20 @@
+##在R中使用kmeans函数进行k均值聚类
+###centers参数用来设置分类个数，nstart参数用来设置取随机初始中心的次数
+###其默认值为1，但取较多的次数可以改善聚类效果
+###model$cluster可以用提取每个样本所属的类别
+set.seed(123)
+usedcardata<-read.csv("数据2-3000条.csv")
+model=kmeans(usedcardata,centers=6,nstart=10,iter.max=10)###聚类
+model$centers###展示类中心
+
+######计算距离矩阵
+dist.e=dist(usedcardata,method = 'euclidean')
+############将距离矩阵2维化，用于可视化处理
+mds=cmdscale(dist.e,k=2,eig=T)
+x=mds$points[,1]#x轴
+ y=mds$points[,2]#y轴
+class=factor(model$cluster)#####存储聚类结果
+p=ggplot(data.frame(x,y),aes(x,y))#######构造画布
+#######在画布上画点
+p+geom_point(size=3,alpha=0.9,
+             aes(colour=class,shape=class))
