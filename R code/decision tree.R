@@ -1,0 +1,41 @@
+#设置目录
+setwd("D:\\Document\\学习\\2018-2019  1\\数据挖掘(R语言)\\第二次报告\\数据2")
+#导入数据
+usedcar=read.csv("数据2-3000条.csv",stringsAsFactors=F)
+#加载包
+library(rpart)
+library(rpart.plot)
+
+set.seed(123) #设置随机数种子
+str(usedcar) #查看各个变量属性
+usedcar$type<-as.factor(usedcar$type) #将违约变量改为因子类型
+usedcar$变速箱<-as.factor(usedcar$变速箱)
+usedcar$燃料类型<-as.factor(usedcar$燃料类型)
+
+#将数据分为训练集和测试集，比例为7：3
+ind<-sample(2,nrow(usedcar),replace = T, prob = c(0.7,0.3)) 
+train<- usedcar [ind==1,] 
+test<- usedcar [ind==2,] 
+#查看训练集和测试集的数据
+prop.table(table(train$type))
+prop.table(table(test$type))
+
+library(rpart)
+library(rpart.plot) #安装并加载建立决策树所需要的程序包
+ct<-rpart.control(xval=10,minsplit = 10,cp=0.001) #对决策树进行一些设置
+fit<-rpart(type~., data= train, method="class", control=ct,
+               parms= list(split="gini")) #建立决策树
+fit$cptable
+
+opt<-which.min(fit$cptable[,"xerror"]) #选择预测误差最小值的预测树，从而优化模型
+cp<-fit$cptable[opt,"CP"] #返回最小的“xerror”对应的cp
+fit.prune<-prune(fit,cp=cp) #按照cp剪枝 
+rpart.plot(fit.prune,branch=0.2,branch.type=6,type=1,extra = 1,
+           box.col="forestgreen",border.col="forestgreen",split.col="forestgreen",
+           split.cex=1.2,tweak=1) #决策树的可视化
+
+
+library(gmodels) #加载gmodels程序包
+usedcar.pre=predict(fit.prune, test[,-1],type="class") #测试集预测
+CrossTable(test$type, usedcar.pre, prop.c = F, prop.r = F, prop.chisq = F,dnn = c("actural default","predict default")) #建立混淆矩阵
+sum(usedcar.pre== test$type)/nrow(test) #计算命中率
